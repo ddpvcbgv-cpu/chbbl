@@ -91,15 +91,16 @@
     font-size: 1.8rem;
     font-weight: 800;
     color: #333;
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.5rem;
+    text-align: center;
+    line-height: 1.3;
+    word-break: keep-all;
   }
   .highlight { 
     color: #007aff; 
     font-size: 2.8rem; 
     font-weight: 900;
+    margin: 0 0.2rem;
+    vertical-align: baseline;
   }
 
   .level-section {
