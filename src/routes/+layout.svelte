@@ -4,53 +4,32 @@
   import { onDestroy, setContext } from "svelte";
 
   let { children } = $props();
-
-  let audio;
-  let fadeInterval;
-
-  function fadeIn() {
-    if (!audio) return;
-    audio.volume = 0;
-    audio.play().catch(e => console.log("Audio play prevented:", e));
-    
-    fadeInterval = setInterval(() => {
-      if (audio.volume < 0.25) {
-        audio.volume = Math.min(audio.volume + 0.01, 0.3);
-      } else {
-        clearInterval(fadeInterval);
-      }
-    }, 100);
-  }
-
-  // 상위에서 오디오를 직접 제어할 수 있도록 함수 제공
-  setContext('audioControl', {
-    play: () => {
-      audioState.set({ isPlaying: true });
-      if (audio && audio.paused) fadeIn();
-    },
-    pause: () => {
-      audioState.set({ isPlaying: false });
-      if (audio && !audio.paused) audio.pause();
-    }
-  });
-
-  // 오디오 재생 상태가 true이면 페이드인 시작
-  $effect(() => {
-    if ($audioState.isPlaying) {
-      if (audio && audio.paused) {
-        fadeIn();
-      }
-    } else {
-      if (audio && !audio.paused) {
-        audio.pause();
-      }
-    }
-  });
-
+// ... (중략) ...
   onDestroy(() => {
     if (fadeInterval) clearInterval(fadeInterval);
   });
 </script>
+
+<svelte:head>
+  <!-- 기본 메타 정보 -->
+  <title>뮤지컬 〈빨래〉 애정도 테스트</title>
+  <meta name="description" content="맞힌 개수는 중요하지 않습니다. 빨래를 다시 떠올리며 당신이 짓게 될 미소가 더 중요합니다." />
+
+  <!-- Open Graph / Facebook / KakaoTalk -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://chbbl.vercel.app" />
+  <meta property="og:title" content="뮤지컬 〈빨래〉 애정도 테스트" />
+  <meta property="og:description" content="맞힌 개수는 중요하지 않습니다. 빨래를 다시 떠올리며 당신이 짓게 될 미소가 더 중요합니다." />
+  <meta property="og:image" content="https://chbbl.vercel.app/og-image.png" />
+  <meta property="og:site_name" content="뮤지컬 〈빨래〉 애정도 테스트" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://chbbl.vercel.app" />
+  <meta property="twitter:title" content="뮤지컬 〈빨래〉 애정도 테스트" />
+  <meta property="twitter:description" content="맞힌 개수는 중요하지 않습니다. 빨래를 다시 떠올리며 당신이 짓게 될 미소가 더 중요합니다." />
+  <meta property="twitter:image" content="https://chbbl.vercel.app/og-image.png" />
+</svelte:head>
 
 <audio bind:this={audio} src="/audio/bgm.mp3" loop></audio>
 
