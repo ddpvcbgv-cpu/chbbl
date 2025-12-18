@@ -4,7 +4,49 @@
   import { onDestroy, setContext } from "svelte";
 
   let { children } = $props();
-// ... (중략) ...
+
+  let audio;
+  let fadeInterval;
+
+  function fadeIn() {
+    if (!audio) return;
+    audio.volume = 0;
+    audio.play().catch(e => console.log("Audio play prevented:", e));
+    
+    fadeInterval = setInterval(() => {
+      if (audio.volume < 0.25) {
+        audio.volume = Math.min(audio.volume + 0.01, 0.3);
+      } else {
+        clearInterval(fadeInterval);
+      }
+    }, 100);
+  }
+
+  // 상위에서 오디오를 직접 제어할 수 있도록 함수 제공
+  setContext('audioControl', {
+    play: () => {
+      audioState.set({ isPlaying: true });
+      if (audio && audio.paused) fadeIn();
+    },
+    pause: () => {
+      audioState.set({ isPlaying: false });
+      if (audio && !audio.paused) audio.pause();
+    }
+  });
+
+  // 오디오 재생 상태가 true이면 페이드인 시작
+  $effect(() => {
+    if ($audioState.isPlaying) {
+      if (audio && audio.paused) {
+        fadeIn();
+      }
+    } else {
+      if (audio && !audio.paused) {
+        audio.pause();
+      }
+    }
+  });
+
   onDestroy(() => {
     if (fadeInterval) clearInterval(fadeInterval);
   });
